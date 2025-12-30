@@ -3,32 +3,14 @@
 import { useState } from 'react';
 import TextTranslation from '@/components/TextTranslation';
 import JsonTranslation from '@/components/JsonTranslation';
+import { UseTranslationState, UseTranslationActions } from '@/hooks/useTranslation';
 
 interface TranslationTabsProps {
-  sourceLanguage: string;
-  targetLanguage: string;
-  setSourceLanguage: (lang: string) => void;
-  setTargetLanguage: (lang: string) => void;
-  translatedText: string;
-  setTranslatedText: (text: string) => void;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  error: string;
-  setError: (error: string) => void;
+  state: UseTranslationState;
+  actions: UseTranslationActions;
 }
 
-export default function TranslationTabs({
-  sourceLanguage,
-  targetLanguage,
-  setSourceLanguage,
-  setTargetLanguage,
-  translatedText,
-  setTranslatedText,
-  loading,
-  setLoading,
-  error,
-  setError,
-}: TranslationTabsProps) {
+export default function TranslationTabs({ state, actions }: TranslationTabsProps) {
   const [activeTab, setActiveTab] = useState<'text' | 'json'>('text');
 
   return (
@@ -58,33 +40,9 @@ export default function TranslationTabs({
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'text' && (
-        <TextTranslation
-          sourceLanguage={sourceLanguage}
-          targetLanguage={targetLanguage}
-          setSourceLanguage={setSourceLanguage}
-          setTargetLanguage={setTargetLanguage}
-          translatedText={translatedText}
-          setTranslatedText={setTranslatedText}
-          loading={loading}
-          setLoading={setLoading}
-          error={error}
-          setError={setError}
-        />
-      )}
+      {activeTab === 'text' && <TextTranslation state={state} actions={actions} />}
 
-      {activeTab === 'json' && (
-        <JsonTranslation
-          sourceLanguage={sourceLanguage}
-          targetLanguage={targetLanguage}
-          setSourceLanguage={setSourceLanguage}
-          setTargetLanguage={setTargetLanguage}
-          loading={loading}
-          setLoading={setLoading}
-          error={error}
-          setError={setError}
-        />
-      )}
+      {activeTab === 'json' && <JsonTranslation state={state} actions={actions} />}
     </div>
   );
 }

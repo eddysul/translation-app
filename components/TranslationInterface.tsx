@@ -1,29 +1,30 @@
 'use client';
 
-import { useState } from 'react';
 import TranslationTabs from '@/components/TranslationTabs';
+import ProviderSelector from '@/components/ProviderSelector';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function TranslationInterface() {
-  const [sourceLanguage, setSourceLanguage] = useState('en');
-  const [targetLanguage, setTargetLanguage] = useState('es');
-  const [translatedText, setTranslatedText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [state, actions] = useTranslation();
 
   return (
     <div className="w-full">
-      <TranslationTabs
-        sourceLanguage={sourceLanguage}
-        targetLanguage={targetLanguage}
-        setSourceLanguage={setSourceLanguage}
-        setTargetLanguage={setTargetLanguage}
-        translatedText={translatedText}
-        setTranslatedText={setTranslatedText}
-        loading={loading}
-        setLoading={setLoading}
-        error={error}
-        setError={setError}
-      />
+      <div className="mx-auto max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-white to-sky-50">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Translate</h2>
+            <p className="text-sm text-gray-600">AI-powered translations — choose provider and translate text or JSON</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-600">Provider</div>
+            <ProviderSelector value={state.provider} onChange={actions.setProvider} />
+          </div>
+        </div>
+
+        <div className="p-6">
+          <TranslationTabs state={state} actions={actions} />
+        </div>
+      </div>
     </div>
   );
 }

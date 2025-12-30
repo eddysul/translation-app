@@ -1,174 +1,89 @@
 'use client';
 
 import { useState } from 'react';
-import { languages } from '@/lib/languages';
 import LanguageSelector from '@/components/LanguageSelector';
+import { UseTranslationState, UseTranslationActions } from '@/hooks/useTranslation';
 
 interface TextTranslationProps {
-  sourceLanguage: string;
-  targetLanguage: string;
-  setSourceLanguage: (lang: string) => void;
-  setTargetLanguage: (lang: string) => void;
-  translatedText: string;
-  setTranslatedText: (text: string) => void;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  error: string;
-  setError: (error: string) => void;
+  state: UseTranslationState;
+  actions: UseTranslationActions;
 }
 
-export default function TextTranslation({
-  sourceLanguage,
-  targetLanguage,
-  setSourceLanguage,
-  setTargetLanguage,
-  translatedText,
-  setTranslatedText,
-  loading,
-  setLoading,
-  error,
-  setError,
-}: TextTranslationProps) {
+export default function TextTranslation({ state, actions }: TextTranslationProps) {
   const [inputText, setInputText] = useState('');
 
   const handleTranslate = async () => {
-    if (!inputText.trim()) {
-      setError('Please enter text to translate');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    setTranslatedText('');
-
-    try {
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: inputText,
-          sourceLanguage,
-          targetLanguage,
-          type: 'text',
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Translation failed');
-      }
-
-      const data = await response.json();
-      setTranslatedText(data.translatedText);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const swapLanguages = () => {
-    setSourceLanguage(targetLanguage);
-    setTargetLanguage(sourceLanguage);
+    await actions.translateTextInput(inputText);
   };
 
   return (
     <div className="space-y-6">
-      {/* Language Selectors */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Source Language
-          </label>
-          <LanguageSelector
-            value={sourceLanguage}
-            onChange={setSourceLanguage}
-            label="Select source language"
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        {/* Left column: source */}
+        <div className="md:col-span-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Source</label>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <LanguageSelector value={state.sourceLanguage} onChange={actions.setSourceLanguage} />
+            </div>
+          </div>
+
+          <label className="block text-sm font-semibold text-gray-700 mt-4 mb-2">Text to translate</label>
+          <textarea
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Enter text to translate..."
+            className="w-full h-56 p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 resize-none bg-white"
           />
         </div>
 
-        {/* Swap Button */}
-        <div className="flex items-end justify-center md:justify-start">
+        {/* Middle column: swap button */}
+        <div className="hidden md:flex md:col-span-1 items-center justify-center">
           <button
-            onClick={swapLanguages}
-            className="mb-0 md:mb-0 p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
-            title="Swap languages"
+            onClick={actions.swapLanguages}
+            aria-label="Swap languages"
+            className="p-3 bg-white border border-gray-200 rounded-full shadow hover:shadow-md transition"
           >
-            <svg
-              className="w-5 h-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16V4m0 0L3 8m0 0l4 4m10-4v12m0 0l4-4m0 0l-4-4"
-              />
+            <svg className="w-6 h-6 text-gray-600 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m0 0l4 4m10-4v12m0 0l4-4m0 0l-4-4" />
             </svg>
           </button>
         </div>
 
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Target Language
-          </label>
-          <LanguageSelector
-            value={targetLanguage}
-            onChange={setTargetLanguage}
-            label="Select target language"
-          />
-        </div>
-      </div>
+        {/* Right column: target */}
+        <div className="md:col-span-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Target</label>
+          <LanguageSelector value={state.targetLanguage} onChange={actions.setTargetLanguage} />
 
-      {/* Input Area */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Text to Translate
-        </label>
-        <textarea
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Enter text to translate..."
-          className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-        />
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          {error}
-        </div>
-      )}
-
-      {/* Translate Button */}
-      <button
-        onClick={handleTranslate}
-        disabled={loading}
-        className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
-      >
-        {loading ? 'Translating...' : 'Translate'}
-      </button>
-
-      {/* Output Area */}
-      {translatedText && (
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Translated Text
-          </label>
-          <div className="w-full h-40 p-4 border border-gray-300 rounded-lg bg-gray-50 overflow-y-auto">
-            <p className="text-gray-900 whitespace-pre-wrap">{translatedText}</p>
+          <label className="block text-sm font-semibold text-gray-700 mt-4 mb-2">Translated text</label>
+          <div className="w-full h-56 p-4 border border-gray-200 rounded-lg bg-gray-50 overflow-y-auto">
+            {state.translatedText ? (
+              <p className="text-gray-900 whitespace-pre-wrap">{state.translatedText}</p>
+            ) : (
+              <p className="text-gray-500">Translated text will appear here</p>
+            )}
           </div>
-          <button
-            onClick={() => navigator.clipboard.writeText(translatedText)}
-            className="mt-2 px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
-          >
-            Copy to Clipboard
-          </button>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={handleTranslate}
+              disabled={state.loading}
+              className="flex-1 py-3 px-6 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 disabled:bg-gray-300 transition-colors"
+            >
+              {state.loading ? 'Translating...' : 'Translate'}
+            </button>
+            <button
+              onClick={() => navigator.clipboard.writeText(state.translatedText)}
+              className="px-4 py-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+            >
+              Copy
+            </button>
+          </div>
         </div>
+      </div>
+
+      {/* Error */}
+      {state.error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">{state.error}</div>
       )}
     </div>
   );
