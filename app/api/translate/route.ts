@@ -1,56 +1,42 @@
+/**
+ * API route for text translation
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+import { translateText } from '@/lib/ai/translateText';
+import type { TranslationRequest, TranslationResponse } from '@/lib/types';
+import { ensureFieldsPresent, badRequest, serverError } from '@/lib/api/requestHelpers';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { text, json, sourceLanguage, targetLanguage, type } = body;
+    const body: TranslationRequest = await request.json();
 
-    // Validate required fields
-    if (!sourceLanguage || !targetLanguage) {
-      return NextResponse.json(
-        { error: 'Source and target languages are required' },
-        { status: 400 }
-      );
+    const { text, sourceLanguage, targetLanguage, provider } = body;
+
+    // Validation
+    const missing = ensureFieldsPresent(body, [
+      'text',
+      'sourceLanguage',
+      'targetLanguage',
+      'provider',
+    ]);
+    if (missing) return badRequest(missing);
+
+    if (text.trim().length === 0) {
+      return badRequest('Text cannot be empty');
     }
 
-    if (type === 'text' && !text) {
-      return NextResponse.json(
-        { error: 'Text is required for text translation' },
-        { status: 400 }
-      );
-    }
+    const translatedText = await translateText(text, sourceLanguage, targetLanguage, provider);
 
-    if (type === 'json' && !json) {
-      return NextResponse.json(
-        { error: 'JSON is required for JSON translation' },
-        { status: 400 }
-      );
-    }
+    const response: TranslationResponse = {
+      translatedText,
+      sourceLanguage,
+      targetLanguage,
+      provider,
+    };
 
-    // TODO: Implement actual translation logic using OpenAI/Anthropic
-    // For now, return a placeholder response
-    if (type === 'text') {
-      return NextResponse.json({
-        translatedText: `[Translation from ${sourceLanguage} to ${targetLanguage}]: ${text}`,
-      });
-    } else if (type === 'json') {
-      // Parse the JSON string
-      const parsedJson = JSON.parse(json);
-      // TODO: Implement JSON translation that translates all string values
-      return NextResponse.json({
-        translatedJson: JSON.stringify(parsedJson),
-      });
-    }
-
-    return NextResponse.json(
-      { error: 'Invalid translation type' },
-      { status: 400 }
-    );
+    return NextResponse.json(response);
   } catch (error) {
-    console.error('Translation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process translation request' },
-      { status: 500 }
-    );
+    return serverError(error, 'Translation failed');
   }
 }
