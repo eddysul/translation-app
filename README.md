@@ -1,4 +1,4 @@
-# GT Translate Take Home Assignment
+# General Translation Take Home Assignment
 
 ## Main Features
 
