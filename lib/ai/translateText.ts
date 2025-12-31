@@ -12,7 +12,25 @@ export async function translateText(
   targetLanguage: string,
   provider: Provider
 ): Promise<string> {
-  const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLanguage} to ${targetLanguage}. Provide only the translated text without any additional explanation or formatting.`;
+  // Handle empty strings - return as-is without calling API
+  if (!text || text.trim() === '') {
+    return text;
+  }
+
+  const systemPrompt = `You are a professional translator. Translate from ${sourceLanguage} to ${targetLanguage}.
+
+STRICT RULES - YOU MUST FOLLOW THESE:
+1. Output ONLY the translated text - nothing else
+2. NO explanations, notes, commentary, or meta-text
+3. NO phrases like "Here's the translation:", "This means:", "Note:", etc.
+4. If input is a technical term (package name, command, version number, code), return it UNCHANGED
+5. If unsure whether to translate, DO NOT translate - return the original
+6. Your response should be EXACTLY what would replace the input text
+
+Examples:
+- Input: "Hello" → Output: "안녕하세요" (if Korean)
+- Input: "next dev" → Output: "next dev" (technical command - unchanged)
+- Input: "19.2.3" → Output: "19.2.3" (version number - unchanged)`;
 
   const userMessage = text;
 

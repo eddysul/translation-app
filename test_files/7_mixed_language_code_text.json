@@ -1,0 +1,5 @@
+{
+  "instruction": "Run `npm install` to install dependencies",
+  "command": "cd /path/to/project && npm run dev",
+  "apiUrl": "https://api.example.com/v1/users"
+}

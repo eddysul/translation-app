@@ -1,0 +1,8 @@
+{
+  "errors": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least 8 characters",
+    "network": "Unable to connect. Please try again."
+  }
+}

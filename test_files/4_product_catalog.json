@@ -1,0 +1,18 @@
+{
+  "products": [
+    {
+      "id": "prod-001",
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse with 6 buttons",
+      "price": 29.99,
+      "inStock": true
+    },
+    {
+      "id": "prod-002",
+      "name": "Mechanical Keyboard",
+      "description": "RGB backlit mechanical keyboard with blue switches",
+      "price": 89.99,
+      "inStock": false
+    }
+  ]
+}

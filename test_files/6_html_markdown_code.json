@@ -1,0 +1,5 @@
+{
+  "html": "<h1>Welcome</h1><p>Click <a href='/'>here</a></p>",
+  "markdown": "# Title\n\n**Bold text** and *italic*",
+  "code": "function hello() { return 'world'; }"
+}

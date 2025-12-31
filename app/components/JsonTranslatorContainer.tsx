@@ -27,6 +27,27 @@ export default function JsonTranslatorContainer({ provider }: Props) {
     setTargetLanguage(sourceLanguage);
   };
 
+  const handleFileUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setInputJson(content);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([translatedJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'translated.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <JsonTranslatorView
       provider={provider}
@@ -41,6 +62,8 @@ export default function JsonTranslatorContainer({ provider }: Props) {
       error={error}
       onTranslate={handleTranslate}
       onSwap={handleSwap}
+      onFileUpload={handleFileUpload}
+      onDownload={handleDownload}
     />
   );
 }

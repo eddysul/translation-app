@@ -1,0 +1,11 @@
+{
+  "items": [
+    "String item",
+    123,
+    true,
+    null,
+    {
+      "nested": "object in array"
+    }
+  ]
+}
