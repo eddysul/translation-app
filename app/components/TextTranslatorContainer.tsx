@@ -13,7 +13,7 @@ interface Props {
 export default function TextTranslatorContainer({ provider }: Props) {
   const [inputText, setInputText] = useState('');
   const [sourceLanguage, setSourceLanguage] = useState(LANGUAGES[0].code);
-  const [targetLanguage, setTargetLanguage] = useState(LANGUAGES[1].code);
+  const [targetLanguage, setTargetLanguage] = useState(LANGUAGES[7].code);
 
   const { isLoading, error, translatedText, translate } = useTranslator(provider);
 

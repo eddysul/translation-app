@@ -61,7 +61,7 @@ export default function JsonTranslatorView({
         <div className="flex justify-center">
           <button
             onClick={onSwap}
-            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 transition-colors"
+            className="p-2 panel-input rounded-lg transition-colors"
             title="Swap languages"
             disabled={isLoading}
           >
@@ -94,7 +94,7 @@ export default function JsonTranslatorView({
         <button
           onClick={() => onTranslate()}
           disabled={isLoading || !inputJson.trim() || !isValidJson}
-          className="md:col-span-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          className="md:col-span-2 btn-primary font-medium rounded-lg transition-colors"
           title={!isValidJson ? 'Invalid JSON' : ''}
         >
           {isLoading ? 'Translating...' : 'Translate'}
@@ -119,16 +119,16 @@ export default function JsonTranslatorView({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">JSON Input</label>
+          <label className="block text-sm font-medium text-foreground mb-2">JSON Input</label>
           <textarea
             value={inputJson}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder='Paste your JSON here, e.g. {"key": "value"}'
-            className={`w-full h-48 px-4 py-3 bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm ${
-              inputJson.trim() && !isValidJson ? 'border-yellow-600' : 'border-gray-600'
-            } text-white`}
+            className={`w-full h-48 px-4 py-3 panel-input rounded-lg resize-none font-mono text-sm ${
+              inputJson.trim() && !isValidJson ? 'border-yellow-600' : ''
+            }`}
           />
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs muted mt-2">
             {inputJson.length} characters
             {isValidJson && inputJson.trim() ? ' ✓' : ''}
           </p>
@@ -136,17 +136,17 @@ export default function JsonTranslatorView({
 
         {/* Output */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Translated JSON</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Translated JSON</label>
           <textarea
             value={translatedJson}
             readOnly
             placeholder="Translated JSON will appear here..."
-            className="w-full h-48 px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg resize-none font-mono text-sm"
+            className="w-full h-48 px-4 py-3 panel-input rounded-lg resize-none font-mono text-sm"
           />
           {translatedJson && (
             <button
               onClick={() => navigator.clipboard.writeText(translatedJson)}
-              className="text-xs text-blue-400 hover:text-blue-300 mt-2"
+              className="text-xs text-foreground hover:underline mt-2"
             >
               Copy to clipboard
             </button>

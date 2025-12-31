@@ -13,7 +13,7 @@ interface Props {
 export default function JsonTranslatorContainer({ provider }: Props) {
   const [inputJson, setInputJson] = useState('');
   const [sourceLanguage, setSourceLanguage] = useState(LANGUAGES[0].code);
-  const [targetLanguage, setTargetLanguage] = useState(LANGUAGES[1].code);
+  const [targetLanguage, setTargetLanguage] = useState(LANGUAGES[7].code);
 
   const { isLoading, error, translatedJson, translate } = useJsonTranslator(provider);
 

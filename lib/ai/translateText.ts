@@ -18,7 +18,7 @@ export async function translateText(
 
   if (provider === 'openai') {
     const response = await openaiClient.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-5.2',
       messages: [
         {
           role: 'system',
@@ -30,7 +30,7 @@ export async function translateText(
         },
       ],
       temperature: 0.3,
-      max_tokens: 2000,
+      max_completion_tokens: 2000,
     });
 
     const translatedText = response.choices[0]?.message?.content?.trim();
@@ -40,12 +40,13 @@ export async function translateText(
     return translatedText;
   } else if (provider === 'anthropic') {
     const response = await anthropicClient.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 2000,
+      system: systemPrompt,
       messages: [
         {
           role: 'user',
-          content: `${systemPrompt}\n\n${userMessage}`,
+          content: userMessage,
         },
       ],
     });

@@ -50,7 +50,7 @@ export default function TextTranslatorView({
         <div className="flex justify-center">
           <button
             onClick={onSwap}
-            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 transition-colors"
+            className="p-2 panel-input rounded-lg transition-colors"
             title="Swap languages"
             disabled={isLoading}
           >
@@ -83,7 +83,7 @@ export default function TextTranslatorView({
         <button
           onClick={() => onTranslate()}
           disabled={isLoading || !inputText.trim()}
-          className="md:col-span-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          className="md:col-span-2 btn-primary font-medium rounded-lg transition-colors"
         >
           {isLoading ? 'Translating...' : 'Translate'}
         </button>
@@ -100,29 +100,29 @@ export default function TextTranslatorView({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Text to Translate</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Text to Translate</label>
           <textarea
             value={inputText}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Enter text here..."
-            className="w-full h-48 px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full h-48 px-4 py-3 panel-input resize-none"
           />
-          <p className="text-xs text-gray-400 mt-2">{inputText.length} characters</p>
+          <p className="text-xs muted mt-2">{inputText.length} characters</p>
         </div>
 
         {/* Output */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Translation</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Translation</label>
           <textarea
             value={translatedText}
             readOnly
             placeholder="Translation will appear here..."
-            className="w-full h-48 px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg resize-none"
+            className="w-full h-48 px-4 py-3 panel-input resize-none"
           />
           {translatedText && (
             <button
               onClick={() => navigator.clipboard.writeText(translatedText)}
-              className="text-xs text-blue-400 hover:text-blue-300 mt-2"
+              className="text-xs text-foreground hover:underline mt-2"
             >
               Copy to clipboard
             </button>

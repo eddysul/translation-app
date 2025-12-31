@@ -1,15 +1,43 @@
 @import "tailwindcss";
 
+/* Theme variables: light and dark. We toggle by setting
+   `document.documentElement.dataset.theme = 'light' | 'dark'` */
+
 :root {
-  --background: #0f172a; /* slate-950 */
-  --foreground: #f1f5f9; /* slate-100 */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme='dark'] {
+  --background: #0f172a; /* slate-950 */
+  --foreground: #f1f5f9; /* slate-100 */
+  --muted: #94a3b8;
+  --card-bg: rgba(17, 24, 39, 0.7);
+  --panel-bg: #0b1220;
+  --border: rgba(148,163,184,0.12);
+  --accent: #0ea5e9;
+  --button-text: #ffffff;
+}
+
+[data-theme='light'] {
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #0f172a; /* slate-950 */
+  --muted: #475569;
+  --card-bg: rgba(255,255,255,0.8);
+  --panel-bg: #ffffff;
+  --border: rgba(2,6,23,0.06);
+  --accent: #2563eb;
+  --button-text: #ffffff;
+}
+
+/* Default to dark if not specified */
+:root:not([data-theme]) {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --muted: #94a3b8;
+  --card-bg: rgba(17, 24, 39, 0.7);
+  --panel-bg: #0b1220;
+  --border: rgba(148,163,184,0.12);
 }
 
 body {
@@ -44,3 +72,67 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Apply variable-driven styles to common elements */
+select,
+input,
+textarea,
+button {
+  background-color: var(--panel-bg);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.card {
+  background: var(--card-bg);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+/* Theme-aware helpers */
+.muted {
+  color: var(--muted) !important;
+}
+
+.text-foreground {
+  color: var(--foreground) !important;
+}
+
+.section {
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.panel-input {
+  background: var(--panel-bg);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--accent, #0ea5e9);
+  color: var(--button-text, #ffffff);
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* small badge showing selected language */
+.lang-badge {
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--foreground);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* Smooth scrollbar styling */
