@@ -1,32 +1,25 @@
-# GT Translate - AI-Powered Translation Application
+# GT Translate Take Home Assignment
 
-A modern web application for translating text and JSON files using OpenAI and Anthropic APIs. Built with Next.js, TypeScript, and TailwindCSS with a clean, decoupled architecture.
+## Main Features
 
-## Features
-
-✨ **Text Translation**
-- Translate text between multiple languages (English, Spanish, French, German, Portuguese, Italian, Dutch, Korean, Japanese, Chinese)
-- Support for both OpenAI (GPT-5.2) and Anthropic (Claude Sonnet 4.5) models
+**Text Translation**
+- Translate text between multiple languages 
+- Support for both newest OpenAI (GPT-5.2) and Anthropic (Claude Sonnet 4.5) models
 - Language swap functionality
-- Character count tracking
+- Character count tracking and copy to clipboard functionality.
 
-📄 **JSON Translation**
+**JSON Translation**
 - Upload JSON files or paste JSON directly
 - Automatically translates all string values while preserving structure and keys
 - JSON validation with error messages
 - Download translated JSON files
-- Copy to clipboard functionality
+- Character count tracking and copy to clipboard functionality.
 
-�� **Theme Support**
-- Light and dark mode with toggle button
-- Persistent theme preference via localStorage
-- Theme-aware styling across all components
-
-🎨 **Modern UI**
-- Clean, intuitive interface with consistent design
+**Modern UI and Styling**
 - Responsive layout (mobile, tablet, desktop)
 - Visual feedback for loading states and errors
 - Smooth transitions and hover effects
+- light and dark mode toggle button
 
 ## Implementation Details
 
@@ -49,32 +42,27 @@ app/
 └── layout.tsx        # Root layout with theme initialization
 ```
 
-**Key Design Decisions:**
-- **UI/Logic Separation**: Container components handle state and logic; view components handle rendering
-- **Decoupled Services**: Translation logic is isolated from API routes and React components
-- **Theme System**: CSS custom properties enable seamless light/dark mode without hardcoded colors
-- **File Upload Handling**: Logic in container component, UI in view component
-
-### Models Used
-
-- **OpenAI**: GPT-5.2 (latest model with `max_completion_tokens` parameter)
-- **Anthropic**: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+**Technical Decisions and Assumptions:**
+- **Service -> Hook -> View Architecture**: Decoupling of business logic, state management from UI allows easier testing and ability to test each feature individually without it affecting the other. 
+- **UI/Logic Separation**: Used containers to decouple UI styling from state management and logic. Container components handle state and logic; view components handle rendering and UI so that it is easier to maintain and refactor code.
+- **API Design**: Created server side API routes than direct client side calls to protect env variables and API keys from being exposed.
+- **Extensibility**: Avoided hard coding languages and AI providers directly inside components, by creating a separate lib/constants folder. Created a constants and providers interface so that it is easier to add providers and languages if I were to scale without largely touching existing logic.
+- **Model Selection**: Chose latest models GPT-5.2 and Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 
 ### Translation Strategy
 
-The system prompt is designed to:
+I system prompted the AI models with a specific set of rules. These rules can be found in lib/ai/translateText.ts
 1. Output ONLY the translated text (no explanations or meta-commentary)
-2. Preserve technical terms, commands, version numbers, and code
+2. Preserve technical terms such as commands, version numbers, and code, ids, names.
 3. Return empty strings and null values unchanged
-4. Prevent hallucinations by being explicit about what NOT to do
+4. Return the original, if it is unsure of what to translate.
+
+### Constraints
+1. Only json files are allowed to be uploaded for now
+2. Only 10 languages to not overcomplicate testing.
+3. Only 2 providers (Open AI and Anthropic)
 
 ## How to Run Locally
-
-### Prerequisites
-- Node.js 18+ and npm
-- `.env.local` file with API credentials
-
-### Setup
 
 1. **Clone the repository:**
 ```bash
@@ -102,24 +90,18 @@ npm run dev
 5. **Open the app:**
 Navigate to [http://localhost:3000](http://localhost:3000)
 
-### Build for Production
 
-```bash
-npm run build
-npm start
-```
-
-## Challenges & Solutions
+## Challenges
 
 ### Challenge 1: Anthropic Model Compatibility
 **Problem:** Initial Anthropic API calls returned 404 "model not found" errors with various model names.
 
 **Solution:** Tested different model versions until finding `claude-sonnet-4-5-20250929` which was supported by the proxy. The proxy has a whitelist of supported models, so we had to iterate to find a compatible one.
 
-### Challenge 2: AI Models Adding Explanatory Text
-**Problem:** When translating individual JSON values, the AI models would add explanatory notes like "Here's the translation:" instead of returning just the translated text.
+### Challenge 2: System Prompting AI Models
+**Problem:** When translating individual JSON values, the AI models would add explanatory notes like "Here's the translation:" instead of returning just the translated text. Also, the translation would sometimes be inconsistent and not make sense.
 
-**Solution:** Made the system prompt much more explicit with:
+**Solution:** Made the system prompt much more explicit and consistent with:
 - Numbered STRICT RULES
 - Examples of correct behavior
 - Emphasis on returning ONLY the translation
@@ -128,7 +110,7 @@ npm start
 ### Challenge 3: Empty String Handling
 **Problem:** Anthropic API rejected requests with empty messages ("all messages must have non-empty content").
 
-**Solution:** Added early return in `translateText()` to skip API calls for empty strings and return them unchanged.
+**Solution:** Added early return in `translateText()` to skip API calls for empty strings and return them unchanged. 
 
 ### Challenge 4: JSON Structure Preservation
 **Problem:** Ensuring JSON keys are never translated while all string values are translated recursively.
@@ -139,35 +121,18 @@ npm start
 - Recursively handles nested objects and arrays
 - Leaves non-string types (numbers, booleans, null) untouched
 
-## What I Would Improve With More Time
-
-### Short-term Improvements
-1. **Batch Translation Requests**: Instead of translating each JSON value individually, batch them into fewer API calls for better performance
-2. **Smooth CSS Transitions**: Add transitions when switching themes for a polished feel
-3. **Caching**: Store recent translations to reduce API calls and costs
-4. **Streaming Responses**: Stream large translation results for better perceived performance
-
-### Medium-term Improvements
-1. **History Panel**: Save and manage previous translations
-2. **More Language Support**: Add more language pairs beyond Korean
-3. **Advanced JSON Options**: 
-   - Selective field translation (translate only certain keys)
-   - Preserve comments in JSON files
-   - Custom key patterns to skip
-4. **Rate Limiting**: Implement request throttling to prevent abuse
-5. **Error Retry Logic**: Automatic retry with exponential backoff for failed translations
-
-### Long-term Improvements
-1. **User Accounts**: Save translation history and preferences
-2. **API Usage Dashboard**: Show token usage, costs, and statistics
-3. **Custom Model Selection**: Allow users to choose from multiple model versions
-4. **Collaborative Translation**: Real-time collaboration on translation projects
-5. **Localization Format Support**: Support for i18n formats (YAML, TOML, PO files, etc.)
-6. **Quality Metrics**: Track translation quality and user feedback
+## Improvements
+1. **Adding more providers and languages**: Add more AI providers and languages.
+2. **History**: Add a history panel for users so users can see their most recent translation requests or view their past requests.
+3. **Additional File Support**: Instead of just json files, support for text, or image files for both text and json translation version.
+4. **Rate Limiting**: Put a limit on number of requests so system doesn't get overhauled.
+5. **Batch Translation Requests**: Instead of translating each JSON value individually, batch them into fewer API calls for lower latency
+6. **Caching**: Store recent translations to reduce API calls and costs
+8. **Streaming Responses**: Stream large translation results for better perceived performance
 
 ## Testing
 
-Test files are included in `test_files/` folder with various edge cases:
+Test files are included in `test_files/` folder with various edge cases and can test for both text and json files:
 - UI labels and error messages
 - Package.json (technical terms)
 - Product catalogs (mixed content)
@@ -178,28 +143,8 @@ Test files are included in `test_files/` folder with various edge cases:
 - Arrays with mixed types
 - Emojis and special formatting
 
-Run through these manually using the JSON upload feature to validate translation quality.
+Run through these manually using the JSON upload feature or copy paste the text files to validate translation quality.
 
 ## Deployment
 
-Deployed on **Vercel** at: [Your Vercel URL]
-
-### Deployment Steps
-1. Push code to public GitHub repository
-2. Connect repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy with one click
-
-## Technologies Used
-
-- **Frontend**: Next.js 16.1.1, React 19.2.3, TypeScript, TailwindCSS 4
-- **Backend**: Next.js API Routes
-- **AI APIs**: OpenAI (via proxy), Anthropic (via proxy)
-- **State Management**: React Hooks
-- **Styling**: CSS Custom Properties + TailwindCSS
-
-## Credits
-
-- Built with Next.js and Vercel
-- Uses official OpenAI and Anthropic SDKs
-- Inspired by modern translation tools like Google Translate and DeepL
+Deployed using **Vercel** at: https://translation-app-psi-ivory.vercel.app/
